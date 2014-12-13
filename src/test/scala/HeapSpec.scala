@@ -6,10 +6,7 @@ import jawnHeap._
 
 class HeapSpec extends WordSpec with Matchers {
 
-  "The async parser" must {
-
-    "parse an infinite stream without blowing up the heap" in {
-      val jsonObject = """
+  val jsonObject = """
         { 
           "a": "value a1",
           "b": 
@@ -43,9 +40,16 @@ class HeapSpec extends WordSpec with Matchers {
             }
           ],
           "m" : ["value m11", "value m12"]
-        }
-      """
-      Parser.streamConversion("[" #:: Stream.continually[String](jsonObject + ","))
+        },
+"""
+
+  "The async parser" must {
+    "parse an infinite iterator without blowing up the heap" in {
+      Parser.iteratorConversion(Iterator("[") ++ Iterator.continually[String](jsonObject))
+    }
+
+    "parse an infinite stream without blowing up the heap" in {
+      Parser.streamConversion("[" #:: Stream.continually[String](jsonObject))
     }
   }
 }

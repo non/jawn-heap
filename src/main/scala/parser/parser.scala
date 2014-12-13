@@ -40,4 +40,30 @@ object Parser {
     // Business Time!
     loop(1, chunks, p)
   }
+
+  def iteratorConversion(it: Iterator[String]) = {
+
+    val p = jawn.Parser.async[JValue](mode = AsyncParser.UnwrapArray)
+
+    var ok = true
+    var i = 1
+    while (ok && it.hasNext) {
+      val s = it.next()
+      p.absorb(s) match {
+        case Left(exception) ⇒
+          log.error("An error occured in the stream", exception)
+          ok = false
+        case Right(jsSeq) ⇒
+          if ((i % 1000) == 0) log.debug(s"parsed $i objects so far")
+          i += 1
+      }
+    }
+
+    p.finish() match {
+      case Left(exception) ⇒
+        log.error("An error occured at the end of the stream", exception)
+      case Right(jsSeq) ⇒
+        log.debug(s"End of parsing with $jsSeq")
+    }
+  }
 }

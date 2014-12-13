@@ -19,7 +19,10 @@ scalacOptions := Seq(
 
 fork in Test := true
 
-javaOptions in Test ++= Seq("-Xmx4G")
+javaOptions in Test ++= Seq(
+  "-Xmx4G",
+  "-XX:+PrintGCDetails"
+)
 
 scalariformSettings
 

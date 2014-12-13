@@ -18,7 +18,7 @@ object Parser {
     val p = jawn.Parser.async[JValue](mode = AsyncParser.UnwrapArray)
 
     @tailrec
-    def loop(st: Stream[String], p: jawn.AsyncParser[JValue]): Unit =
+    def loop(i: Int, st: Stream[String], p: jawn.AsyncParser[JValue]): Unit =
       st match {
         case Stream.Empty ⇒
           p.finish() match {
@@ -32,12 +32,12 @@ object Parser {
             case Left(exception) ⇒
               log.error("An error occured in the stream", exception)
             case Right(jsSeq) ⇒
-              //log.debug(s"Parsed $jsSeq and going on")
-              loop(tail, p)
+              if ((i % 1000) == 0) log.debug(s"parsed $i objects so far")
+              loop(i + 1, tail, p)
           }
       }
 
     // Business Time!
-    loop(chunks, p)
+    loop(1, chunks, p)
   }
 }
